@@ -21,19 +21,17 @@ jobs:
       run: |
         git config --global --add safe.directory '*'
 
-    - name: Clean broken buildozer caches
+    - name: Clean everything completely
       run: |
-        rm -rf .buildozer ~/.buildozer
+        rm -rf .buildozer ~/.buildozer /home/user/.buildozer /github/home/.buildozer
 
-    - name: Upgrade Build Tools in Container
+    - name: Downgrade/Pin Toolchain to Support Python 3.11
       run: |
-        /home/user/.venv/bin/pip install --upgrade setuptools "Cython<3.1.0" python-for-android
+        /home/user/.venv/bin/pip install --upgrade pip setuptools "Cython<3.1.0" "python-for-android>=2024.1par"
 
     - name: Build with Buildozer
       env:
         BUILDOZER_WARN_ON_ROOT: 0
-        PIP_NO_BINARY: ":all:"
-        PIP_ONLY_BINARY: ""
       run: |
         set -o pipefail
         buildozer -v android debug 2>&1 | tee build.log

@@ -8,7 +8,7 @@ package.domain = org.ronyxaudio
 source.include_exts = py,png,jpg,kv,atlas
 source.dir = .
 version = 1.0
-requirements = python3,hostpython3,kivy,yt-dlp,certifi,openssl,requests,idna
+requirements = python3==3.11.9,kivy,yt-dlp,certifi,openssl,requests,idna
 orientation = portrait
 fullscreen = 0
 android.permissions = INTERNET
