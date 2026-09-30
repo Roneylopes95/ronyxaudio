@@ -1,4 +1,4 @@
-name: Build Android APK (Docker)
+name: Build Android APK (Native)
 
 on:
   push:
@@ -7,33 +7,24 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container:
-      image: kivy/buildozer:latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        submodules: false
 
-    - name: Configure Git Safe Directory
+    - name: Install System Dependencies
       run: |
-        git config --global --add safe.directory '*'
+        sudo apt-get update
+        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
 
-    - name: Clean everything completely
+    - name: Install Buildozer & Dependencies
       run: |
-        rm -rf .buildozer ~/.buildozer /home/user/.buildozer /github/home/.buildozer
-
-    - name: Downgrade/Pin Toolchain to Support Python 3.11
-      run: |
-        /home/user/.venv/bin/pip install --upgrade pip setuptools "Cython<3.1.0" "python-for-android>=2024.1par"
+        pip3 install --user --upgrade buildozer "cython<3.1.0" virtualenv
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Build with Buildozer
-      env:
-        BUILDOZER_WARN_ON_ROOT: 0
       run: |
-        set -o pipefail
         buildozer -v android debug 2>&1 | tee build.log
 
     - name: 🔍 Extrair Erro Real do Buildozer
