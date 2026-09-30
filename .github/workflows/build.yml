@@ -21,19 +21,23 @@ jobs:
       run: |
         git config --global --add safe.directory '*'
 
+    - name: Clean broken NDK and Buildozer caches
+      run: |
+        rm -rf .buildozer ~/.buildozer
+
     - name: Build with Buildozer
       env:
         BUILDOZER_WARN_ON_ROOT: 0
       run: |
         set -o pipefail
-        yes | buildozer -v android debug 2>&1 | tee build.log
+        buildozer -v android debug 2>&1 | tee build.log
 
-    - name: Show Detailed Error Log on Failure
+    - name: 🔍 Extrair Erro Real do Buildozer
       if: failure()
       run: |
-        echo "=================== ÚLTIMAS 300 LINHAS DO LOG DE ERRO ==================="
-        tail -n 300 build.log
-        echo "========================================================================="
+        echo "=================== LINHAS COM ERRO DETECTADAS ==================="
+        grep -i -C 3 -E "error:|command failed|exception|recipe.*failed" build.log | tail -n 50 || true
+        echo "=================================================================="
 
     - name: Upload Debug Log on Failure
       if: failure()
