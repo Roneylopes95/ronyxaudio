@@ -25,6 +25,7 @@ jobs:
       env:
         BUILDOZER_WARN_ON_ROOT: 0
       run: |
+        set -o pipefail
         yes | buildozer -v android debug 2>&1 | tee build.log
 
     - name: Show Detailed Error Log on Failure
