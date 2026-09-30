@@ -38,14 +38,19 @@ jobs:
         pip install --user "Cython<3.0.0"
         pip install --user buildozer
 
-    - name: Pre-accept Android SDK Licenses for Buildozer
+    - name: Setup Android Command-line Tools & Licenses
       run: |
-        mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-        if [ -d "$ANDROID_HOME/licenses" ]; then
-          cp -r $ANDROID_HOME/licenses/* ~/.buildozer/android/platform/android-sdk/licenses/
-        fi
-        printf "\n24333f8a637b82e1e5c3169f824214741a33a50a\n89330d3222db157f9a15d58d3111266e7a869504\nd56f518747945141a054625d12335f5842614343" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-        printf "\n84831b9409646a918e30573bab4c9c91346d8abd" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+        SDK_DIR="$HOME/.buildozer/android/platform/android-sdk"
+        mkdir -p "$SDK_DIR/cmdline-tools"
+        wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O /tmp/cmdline-tools.zip
+        unzip -q /tmp/cmdline-tools.zip -d "$SDK_DIR/cmdline-tools"
+        mv "$SDK_DIR/cmdline-tools/cmdline-tools" "$SDK_DIR/cmdline-tools/latest"
+        ln -s "$SDK_DIR/cmdline-tools/latest" "$SDK_DIR/tools"
+        rm /tmp/cmdline-tools.zip
+
+        mkdir -p "$SDK_DIR/licenses"
+        printf "\n24333f8a637b82e1e5c3169f824214741a33a50a\n89330d3222db157f9a15d58d3111266e7a869504\nd56f518747945141a054625d12335f5842614343\n33b6a2b64607f11b759f320ef9dff4ae5c47d97a" > "$SDK_DIR/licenses/android-sdk-license"
+        printf "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$SDK_DIR/licenses/android-sdk-preview-license"
 
     - name: Build with Buildozer
       run: |
