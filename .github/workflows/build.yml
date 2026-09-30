@@ -21,7 +21,7 @@ jobs:
       run: |
         git config --global --add safe.directory '*'
 
-    - name: Clean broken NDK and Buildozer caches
+    - name: Clean broken buildozer caches
       run: |
         rm -rf .buildozer ~/.buildozer
 
