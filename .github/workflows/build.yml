@@ -3,6 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -11,6 +12,12 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Configure Git Safe Directory & Identity
+      run: |
+        git config --global --add safe.directory '*'
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -28,18 +35,13 @@ jobs:
     - name: Install Buildozer and Cython
       run: |
         pip install --upgrade pip
-        pip install --user Cython==0.29.33
+        pip install --user "Cython<3.0.0"
         pip install --user buildozer
-
-    - name: Configure Git Identity
-      run: |
-        git config --global user.email "action@github.com"
-        git config --global user.name "GitHub Action"
 
     - name: Build with Buildozer
       run: |
         export PATH="$HOME/.local/bin:$PATH"
-        buildozer -v android debug
+        yes | buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
