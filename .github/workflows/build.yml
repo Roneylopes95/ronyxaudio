@@ -25,6 +25,10 @@ jobs:
       run: |
         rm -rf .buildozer ~/.buildozer
 
+    - name: Upgrade Cython & Build Tools in Container
+      run: |
+        /home/user/.venv/bin/pip install --upgrade pip setuptools Cython==3.0.11 python-for-android
+
     - name: Build with Buildozer
       env:
         BUILDOZER_WARN_ON_ROOT: 0
