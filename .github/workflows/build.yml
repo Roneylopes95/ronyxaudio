@@ -21,15 +21,25 @@ jobs:
       run: |
         git config --global --add safe.directory '*'
 
-    - name: Wipe broken NDK and Buildozer caches
-      run: |
-        rm -rf .buildozer ~/.buildozer
-
     - name: Build with Buildozer
       env:
         BUILDOZER_WARN_ON_ROOT: 0
       run: |
-        yes | buildozer -v android debug
+        yes | buildozer -v android debug 2>&1 | tee build.log
+
+    - name: Show Detailed Error Log on Failure
+      if: failure()
+      run: |
+        echo "=================== ÚLTIMAS 300 LINHAS DO LOG DE ERRO ==================="
+        tail -n 300 build.log
+        echo "========================================================================="
+
+    - name: Upload Debug Log on Failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: buildozer-debug-log
+        path: build.log
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
