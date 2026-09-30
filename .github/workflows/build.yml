@@ -27,12 +27,13 @@ jobs:
 
     - name: Upgrade Build Tools in Container
       run: |
-        /home/user/.venv/bin/pip install --upgrade "pip<25.0" setuptools "Cython<3.1.0" python-for-android
+        /home/user/.venv/bin/pip install --upgrade setuptools "Cython<3.1.0" python-for-android
 
     - name: Build with Buildozer
       env:
         BUILDOZER_WARN_ON_ROOT: 0
-        PIP_NO_BINARY: "charset-normalizer,idna,requests,urllib3,certifi"
+        PIP_NO_BINARY: ":all:"
+        PIP_ONLY_BINARY: ""
       run: |
         set -o pipefail
         buildozer -v android debug 2>&1 | tee build.log
