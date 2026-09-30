@@ -28,7 +28,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          git wget curl unzip zip ccache lld libltdl-dev libffi-dev libssl-dev \
+          git wget curl unzip libltdl-dev libffi-dev libssl-dev \
           build-essential zlib1g-dev libncurses5-dev libncursesw5-dev \
           libtinfo6 cmake libstdc++6 openjdk-17-jdk ant autoconf libtool pkg-config patch
 
@@ -37,6 +37,12 @@ jobs:
         pip install --upgrade pip
         pip install --user "Cython<3.0.0"
         pip install --user buildozer
+
+    - name: Accept Android SDK Licenses
+      run: |
+        mkdir -p ~/.android
+        touch ~/.android/repositories.cfg
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
     - name: Build with Buildozer
       run: |
