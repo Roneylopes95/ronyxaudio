@@ -20,9 +20,8 @@ jobs:
         git config --global --add safe.directory '*'
 
     - name: Build with Buildozer
-      env:
-        BUILDOZER_ALLOW_KIVY_BUILD_AS_ROOT: 1
       run: |
+        export BUILDOZER_ALLOW_KIVY_BUILD_AS_ROOT=1
         buildozer -v android debug
 
     - name: Upload APK Artifact
