@@ -1,4 +1,7 @@
 [app]
+android.accept_sdk_license = True
+android.build_tools_version = 33.0.2
+android.ndk = 25b
 title = Ronyx Audio
 package.name = ronyxaudio
 package.domain = org.ronyxaudio

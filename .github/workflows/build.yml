@@ -19,9 +19,9 @@ jobs:
       run: |
         git config --global --add safe.directory '*'
 
-    - name: Clean broken NDK cache if present
+    - name: Wipe broken NDK and Buildozer caches
       run: |
-        rm -rf ~/.buildozer/android/platform/android-ndk-*
+        rm -rf .buildozer ~/.buildozer
 
     - name: Build with Buildozer
       env:
