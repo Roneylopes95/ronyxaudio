@@ -1,0 +1,26 @@
+name: Compilar APK Android
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Compilar com Buildozer
+        uses: kivy/buildozer-action@v1
+        with:
+          command: android debug
+          buildozer_version: master
+
+      - name: Salvar o APK gerado
+        uses: actions/upload-artifact@v4
+        with:
+          name: meu-app-apk
+          path: bin/*.apk
