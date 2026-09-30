@@ -1,2 +1,5 @@
 .buildozer/
 bin/
+.buildozer/
+bin/
+*.apk
