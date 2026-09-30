@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android APK (Docker)
 
 on:
   push:
@@ -8,55 +8,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: kivy/buildozer:latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Configure Git Safe Directory & Identity
+    - name: Configure Git Safe Directory
       run: |
         git config --global --add safe.directory '*'
-        git config --global user.email "action@github.com"
-        git config --global user.name "GitHub Action"
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          git wget curl unzip libltdl-dev libffi-dev libssl-dev \
-          build-essential zlib1g-dev libncurses5-dev libncursesw5-dev \
-          libtinfo6 cmake libstdc++6 openjdk-17-jdk ant autoconf libtool pkg-config patch
-
-    - name: Install Buildozer and Cython
-      run: |
-        pip install --upgrade pip
-        pip install --user "Cython<3.0.0"
-        pip install --user buildozer
-
-    - name: Accept All Android Licenses & Pre-install Build-Tools
-      run: |
-        mkdir -p ~/.android
-        touch ~/.android/repositories.cfg
-
-        # 1. Aceitar todas as licenças do SDK pré-instalado do GitHub
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
-        # 2. Pré-instalar a versão 33.0.2 para impedir o download da versão 37
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" "platforms;android-33" "platform-tools" || true
-
-        # 3. Copiar licenças para o diretório do Buildozer
-        mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-        cp -r $ANDROID_HOME/licenses/* ~/.buildozer/android/platform/android-sdk/licenses/ || true
 
     - name: Build with Buildozer
+      env:
+        BUILDOZER_ALLOW_KIVY_BUILD_AS_ROOT: 1
       run: |
-        export PATH="$HOME/.local/bin:$PATH"
-        export ANDROID_HOME=$ANDROID_HOME
         buildozer -v android debug
 
     - name: Upload APK Artifact
