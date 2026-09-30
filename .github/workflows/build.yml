@@ -1,26 +1,43 @@
-name: Compilar APK Android
+name: Build Android APK
 
 on:
   push:
-    branches: [ main, master ]
-  workflow_dispatch:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Baixar código do repositório
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Compilar com Buildozer
-        uses: kivy/buildozer-action@v1
-        with:
-          command: android debug
-          buildozer_version: master
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
 
-      - name: Salvar o APK gerado
-        uses: actions/upload-artifact@v4
-        with:
-          name: meu-app-apk
-          path: bin/*.apk
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          git wget curl unzip libltdl-dev libffi-dev libssl-dev \
+          build-essential zlib1g-dev libncurses5-dev libncursesw5-dev \
+          libtinfo5 cmake libstdc++6 openjdk-17-jdk ant autoconf libtool pkg-config patch
+
+    - name: Install Buildozer and Cython
+      run: |
+        pip install --upgrade pip
+        pip install --user Cython==0.29.33
+        pip install --user buildozer
+
+    - name: Build with Buildozer
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+        buildozer -v android debug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ronyxaudio-apk
+        path: bin/*.apk
