@@ -1,0 +1,43 @@
+name: Build Android APK (Native Clean)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+
+    - name: Install Buildozer & Dependencies
+      run: |
+        pip3 install --user --upgrade buildozer "cython<3.1.0" virtualenv
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Build with Buildozer
+      run: |
+        set -o pipefail
+        buildozer -v android debug 2>&1 | tee build.log
+
+    - name: Upload Debug Log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: buildozer-debug-log
+        path: build.log
+
+    - name: Upload APK Artifact
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ronyxaudio-apk
+        path: bin/*.apk
