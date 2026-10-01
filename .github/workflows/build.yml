@@ -25,23 +25,18 @@ jobs:
 
     - name: Build with Buildozer
       run: |
+        set -o pipefail
         buildozer -v android debug 2>&1 | tee build.log
 
-    - name: 🔍 Extrair Erro Real do Buildozer
-      if: failure()
-      run: |
-        echo "=================== LINHAS COM ERRO DETECTADAS ==================="
-        grep -i -C 3 -E "error:|command failed|exception|recipe.*failed" build.log | tail -n 50 || true
-        echo "=================================================================="
-
-    - name: Upload Debug Log on Failure
-      if: failure()
+    - name: Upload Debug Log
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: buildozer-debug-log
         path: build.log
 
     - name: Upload APK Artifact
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: ronyxaudio-apk
